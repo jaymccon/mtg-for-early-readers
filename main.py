@@ -31,6 +31,9 @@ If you are under 13 you should seek consent from a parent/guardian.
 """
 color_mapping = {"B": "Black", "U":"Blue", "G": "Green", "R": "Red", "W": "White"}
 
+# manually created list of cards that could be frigtening, gory or somehow innapropriate for small children
+innapropriate_cards = [
+]
 def download_file(url, path):
     with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla'})) as response, open(path, 'wb') as out_file:
         shutil.copyfileobj(response, out_file)
@@ -172,7 +175,7 @@ def main():
                 image_path = f"images/{mv_id}.jfif"
                 if not Path(image_path).exists():
                     download_file(mv_url, image_path)
-                md_content += f'<img src="{image_path}" alt="{name}" title="${round(card["price"], 2)}" width="223" />\n'
+                md_content += f'<a href="{card.get("purchaseUrls", {}).get("tcgplayer")}"><img src="{image_path}" alt="{name}" title="${round(card["price"], 2)}" width="223" /></a> '
         print(md_content)
 
 
