@@ -16,6 +16,7 @@ If you are under 13 you should seek consent from a parent/guardian.
 ![Liturgy of Blood](images/446116.jfif)
 ![Undead Minotaur](images/370702.jfif)
 ![Final Reward](images/426794.jfif)
+<img src="images/526245.jfif" width="223" />
 ![Greed](images/526245.jfif)
 ![Skirge Familiar](images/526247.jfif)
 ![Cackling Imp](images/73597.jfif)
