@@ -4,6 +4,9 @@ from pathlib import Path
 import urllib.request
 import shutil
 from sys import argv
+import ssl
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 character_count = 40
 word_length = 8
@@ -29,7 +32,6 @@ If you are under 13 you should seek consent from a parent/guardian.
 color_mapping = {"B": "Black", "U":"Blue", "G": "Green", "R": "Red", "W": "White"}
 
 def download_file(url, path):
-    print(f"downloading {url}...")
     with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla'})) as response, open(path, 'wb') as out_file:
         shutil.copyfileobj(response, out_file)
 
@@ -64,7 +66,9 @@ def only_cheapest_printings(cards):
     
 
 def download_data_sets():
+    print(f"downloading {card_url}...")
     download_file(card_url, card_file)
+    print(f"downloading {price_url}...")
     download_file(price_url, price_file)
 
 
@@ -158,7 +162,12 @@ def main():
             filtered = filter_colors(c, cards)
             for name, card in filtered.items():
                 mv_id = card.get('identifiers', {}).get('multiverseId', '')
-                md_content += f"![{card['name']}](https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid={card.get('identifiers', {}).get('multiverseId', '')}&type=card)\n"
+                mv_url = f"https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid={card.get('identifiers', {}).get('multiverseId', '')}&type=card"
+                image_path = f"images/{mv_id}.jfif"
+                if not Path(image_path).exists():
+                    download_file(mv_url, image_path)
+                md_content += f'<img src="{image_path}" width="223" />'
+                md_content += f"![{card['name']}](images/{mv_id}.jfif)\n"
         print(md_content)
 
 
