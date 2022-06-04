@@ -116,8 +116,14 @@ def filter_data_sets():
             # Not a land
             if "Land" in card.get('types', []):
                 continue
-            # Single sided card
+            # Single sided cards
             if card.get('layout') == 'split':
+                continue
+            # No adventure cards
+            if card.get('layout') == 'adventure':
+                continue
+            # Only cards with multiverseIds
+            if not card.get('identifiers', {}).get('multiverseId'):
                 continue
             if not cards.get(card['name']):
                 cards[card['name']] = []
@@ -158,7 +164,7 @@ def main():
             cards = json.load(fp)
         md_content = md_header + "\n\n"
         for c in [["B"],["U"],["G"],["R"],["W"]]:
-            md_content += f"## {color_mapping[c[0]]}\n\n"
+            md_content += f"\n## {color_mapping[c[0]]}\n\n"
             filtered = filter_colors(c, cards)
             for name, card in filtered.items():
                 mv_id = card.get('identifiers', {}).get('multiverseId', '')
@@ -166,8 +172,7 @@ def main():
                 image_path = f"images/{mv_id}.jfif"
                 if not Path(image_path).exists():
                     download_file(mv_url, image_path)
-                md_content += f'<img src="{image_path}" width="223" />'
-                md_content += f"![{card['name']}](images/{mv_id}.jfif)\n"
+                md_content += f'<img src="{image_path}" alt="{name}" title="${round(card["price"], 2)}" width="223" />\n'
         print(md_content)
 
 
