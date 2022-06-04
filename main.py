@@ -31,8 +31,27 @@ If you are under 13 you should seek consent from a parent/guardian.
 """
 color_mapping = {"B": "Black", "U":"Blue", "G": "Green", "R": "Red", "W": "White"}
 
-# manually created list of cards that could be frigtening, gory or somehow innapropriate for small children
+# manually created list of cards that could be frigtening, gory or somehow 
+# innapropriate for small children. Most of this list is black cards
 innapropriate_cards = [
+    "Liturgy of Blood",
+    "Undead Minotaur",
+    "Assasinate",
+    "Zombie Goliath",
+    "Scathe Zombies",
+    "Bog Rats",
+    "Murder",
+    "Human Frailty",
+    "Hand or Death",
+    "Kelinore Bat",
+    "Warpath Ghoul",
+    "Insatiable Harpy",
+    "Mournful Zombie",
+    "Hunted Ghoul",
+    "Succumb to Temptation",
+    "Carrion Screecher",
+    "Azure Mage",
+    "Hill Giant"
 ]
 def download_file(url, path):
     with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla'})) as response, open(path, 'wb') as out_file:
@@ -127,6 +146,12 @@ def filter_data_sets():
                 continue
             # Only cards with multiverseIds
             if not card.get('identifiers', {}).get('multiverseId'):
+                continue
+            # No innapropriate art
+            if card['name'] in innapropriate_cards:
+                continue
+            # Only cards legal in selected format
+            if card.get("legalities", {}).get(format, "") != "Legal":
                 continue
             if not cards.get(card['name']):
                 cards[card['name']] = []
