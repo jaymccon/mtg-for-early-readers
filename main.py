@@ -8,9 +8,9 @@ import ssl
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-character_count = 40
+character_count = 50
 word_length = 8
-max_cost = 2.0
+max_cost = 3.0
 format = "pioneer"
 
 price_url = "https://mtgjson.com/api/v5/AllPrices.json"
@@ -153,6 +153,9 @@ def filter_data_sets():
             # Only cards legal in selected format
             if card.get("legalities", {}).get(format, "") != "Legal":
                 continue
+            # Cards without // in the name
+            if ' // ' in card['name']:
+                continue
             if not cards.get(card['name']):
                 cards[card['name']] = []
             cards[card['name']].append(card)
@@ -183,13 +186,19 @@ def main():
             print(f"{card.get('setCode')} :: {card['type']} :: {name} :: ${card.get('price')} :: {card['manaCost']} :: {card['text']}")
     elif argv[1] == 'download':
         download_data_sets()
-    elif argv[1] == 'filter':
+        return
+    if argv[1] == 'filter':
         filter_data_sets()
-    elif argv[1] == 'gallery':
-        if not filtered_cards_file.exists():
-            filter_data_sets()
-        with open(str(filtered_cards_file)) as fp:
-            cards = json.load(fp)
+        return
+    if not filtered_cards_file.exists():
+        filter_data_sets()
+    with open(str(filtered_cards_file)) as fp:
+        cards = json.load(fp)
+    if argv[1] == 'mass-entry':
+        for name, card in cards.items():
+            print(f"4 {name}")
+        return
+    if argv[1] == 'gallery':
         md_content = md_header + "\n\n"
         for c in [["B"],["U"],["G"],["R"],["W"]]:
             md_content += f"\n## {color_mapping[c[0]]}\n\n"
@@ -202,7 +211,7 @@ def main():
                     download_file(mv_url, image_path)
                 md_content += f'<a href="{card.get("purchaseUrls", {}).get("tcgplayer")}"><img src="{image_path}" alt="{name}" title="${round(card["price"], 2)}" width="223" /></a> '
         print(md_content)
-
+        return
 
 if __name__ == '__main__':
     main()
